@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   monitor.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: saskin <saskin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: silaaskin <silaaskin@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/05 17:54:59 by silaaskin         #+#    #+#             */
-/*   Updated: 2025/10/11 19:28:43 by saskin           ###   ########.fr       */
+/*   Updated: 2025/10/16 23:14:11 by silaaskin        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,14 +53,12 @@ void    check_all_eaten(t_philo *philo)
     while (i < philo->rules->num_philos)
     {
         pthread_mutex_lock(philo[i].meal_mutex);
-        if (philo[i].meals_eaten >= philo->rules->num_must_eat && philo->rules->num_must_eat != -1)
-        {
+        if (philo[i].meals_eaten >= philo->rules->num_must_eat)//  && philo->rules->num_must_eat != -1 buna gerek var mı bilmiyorum 
             all_eaten_count++;
-        }
         pthread_mutex_unlock(philo[i].meal_mutex);
         i++;
     }
-    if (all_eaten_count == philo->rules->num_philos)
+    if (all_eaten_count == philo->rules->num_must_eat)
     {
         print_action(philo, "meals were eating", 1);
         set_simulation_stopped(philo);

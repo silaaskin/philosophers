@@ -16,11 +16,13 @@
 void    print_action(t_philo *philo, char *output, int flag)
 {
     long time;
+    int stopped;
+    stopped = is_simulation_stopped(philo->rules);//yerini değiştirdim bi etkisi olmadı
     pthread_mutex_lock(&philo->rules->print_mutex);
     time = get_time_in_ms() - philo->rules->start_time;
-    if (!is_simulation_stopped(philo->rules) && flag == 1)
+    if (!stopped && flag == 1)
         printf("%d %s\n",philo->meals_eaten, output);
-    else if (!is_simulation_stopped(philo->rules))
+    else if (!stopped)
         printf("%ld %d %s\n", time, philo->id, output);
     pthread_mutex_unlock(&philo->rules->print_mutex);
     

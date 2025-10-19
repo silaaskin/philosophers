@@ -7,6 +7,7 @@ SRCS =	main.c \
 		routine.c \
 		monitor.c \
 		routine_utils.c \
+		utils.c \
 		init.c 
 
 OBJS = $(SRCS:.c=.o)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   routine.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: saskin <saskin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: silaaskin <silaaskin@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 12:38:32 by silaaskin         #+#    #+#             */
-/*   Updated: 2025/10/11 19:28:57 by saskin           ###   ########.fr       */
+/*   Updated: 2025/10/16 14:52:59 by silaaskin        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,9 @@
 
 void think(t_philo *philo)
 {
+    // Dinamik düşünme gecikmesi: çatal alma zamanlarını dağıtarak deadlock riskini azaltır
     print_action(philo, "is thinking", 0);
-    usleep(1000); // 1 ms: kısa, hemen fork almaya çalışır
+    usleep(1000 + (philo->id % philo->rules->num_philos) * 500);    
 }
 
 
@@ -44,6 +45,7 @@ void    my_sleep(t_philo   *philo)
     usleep(philo->rules->time_to_sleep * 1000);
 }
 
+
 void    *philo_routine(void *arg)
 {
     t_philo *philo = (t_philo *)arg;
@@ -55,8 +57,8 @@ void    *philo_routine(void *arg)
         return NULL;
     }
     
-    if (philo->id % 2 == 0)
-        usleep(100);
+    else if (philo->id % 2 == 0)
+        usleep(1000 + (philo->id % rules->num_philos) * 500);
 
     while(!is_simulation_stopped(philo->rules))
     {
