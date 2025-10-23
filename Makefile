@@ -1,7 +1,7 @@
 NAME = philo
 
-CC = cc
-CFLAGS = -Wall -Werror -Wextra -pthread
+CC = clang
+CFLAGS = -Wall -Werror -Wextra -pthread -g -fsanitize=thread
 
 SRCS =	main.c \
 		routine.c \

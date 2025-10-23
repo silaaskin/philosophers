@@ -6,7 +6,7 @@
 /*   By: silaaskin <silaaskin@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/05 17:54:59 by silaaskin         #+#    #+#             */
-/*   Updated: 2025/10/16 23:14:11 by silaaskin        ###   ########.fr       */
+/*   Updated: 2025/10/23 20:49:18 by silaaskin        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,33 +32,49 @@ void    check_philo_death(t_philo *philo)
     long now;
     long time_since_meal;
 
-    pthread_mutex_lock(philo->meal_mutex);
+    pthread_mutex_lock(&philo->meal_mutex);
+    
     now = get_time_in_ms();
     time_since_meal = now - philo->last_meal_time;
-    pthread_mutex_unlock(philo->meal_mutex);
     
-    if (time_since_meal >= philo->rules->time_to_die)// = i çıkarman gerekebilir
+    pthread_mutex_unlock(&philo->meal_mutex);
+    
+    if (time_since_meal > philo->rules->time_to_die)
     {
-        print_action(philo, "died", 0);
-        set_simulation_stopped(philo);
+        if (!is_simulation_stopped(philo->rules))
+        {
+            set_simulation_stopped(philo);
+            
+            long time = get_time_in_ms() - philo->rules->start_time;
+            pthread_mutex_lock(&philo->rules->print_mutex);
+            printf("%ld %d died\n", time, philo->id);
+            pthread_mutex_unlock(&philo->rules->print_mutex);
+        }
     }
 }
-void    check_all_eaten(t_philo *philo)
+void check_all_eaten(t_philo *philo)
 {
     int all_eaten_count;
     int i;
     
+    if (philo->rules->num_must_eat == -1)
+        return;
+
     all_eaten_count = 0;
     i = 0;
+    
     while (i < philo->rules->num_philos)
     {
-        pthread_mutex_lock(philo[i].meal_mutex);
-        if (philo[i].meals_eaten >= philo->rules->num_must_eat)//  && philo->rules->num_must_eat != -1 buna gerek var mı bilmiyorum 
+        pthread_mutex_lock(&philo[i].meal_mutex);
+        
+        if (philo[i].meals_eaten >= philo->rules->num_must_eat)
             all_eaten_count++;
-        pthread_mutex_unlock(philo[i].meal_mutex);
+            
+        pthread_mutex_unlock(&philo[i].meal_mutex);
         i++;
     }
-    if (all_eaten_count == philo->rules->num_must_eat)
+    
+    if (all_eaten_count == philo->rules->num_philos)
     {
         print_action(philo, "meals were eating", 1);
         set_simulation_stopped(philo);
@@ -70,16 +86,24 @@ void    *monitor_routine(void *arg)
     int     i;
     
     philo = (t_philo *)arg;
+    
     while (!is_simulation_stopped(philo->rules))
     {
-        check_all_eaten(philo);
         i = 0;
+        
         while (i < philo->rules->num_philos)
         {
             check_philo_death(&philo[i]);
+            
+            if(is_simulation_stopped(philo->rules))
+                return NULL;
             i++;
         }
-        usleep(1000);
+        
+        check_all_eaten(philo);
+        if(is_simulation_stopped(philo->rules))
+            return NULL;
+        usleep(100); 
     }
     return (NULL);
 }

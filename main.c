@@ -12,6 +12,15 @@
 
 #include "philo.h"
 
+void    ft_usleep(long time_ms) 
+{
+    long start_time;
+
+    start_time = get_time_in_ms();
+    while (get_time_in_ms() - start_time < time_ms)
+        usleep(1000); // İşlemciyi fazla yormamak için kısa bir usleep
+}
+
 long    get_time_in_ms(void)
 {
     struct timeval tv;
@@ -45,7 +54,7 @@ void    wait_destroy(t_philo *philo)
     pthread_mutex_destroy(&philo->rules->sim_end_mutex);
     i = -1;
     while (++i < philo->rules->num_philos)
-    pthread_mutex_destroy(philo[i].meal_mutex);
+    pthread_mutex_destroy(&philo[i].meal_mutex);
     free(philo->rules->forks);
     free(philo);
     free(philo->rules);  
@@ -57,6 +66,7 @@ int main(int argc, char **argv)
     t_philo *philos;
     pthread_t monitor_thread;
     int i;
+    i = -1;
 
     if (check_arg(argc, argv) != 0)
         return (1);
@@ -70,7 +80,9 @@ int main(int argc, char **argv)
         return (1);
     init_forks(rules);//hata durumunda exit ms mi yapmalıyım int döndürüp burada mı işlemeliyim
     init_philos(philos, rules);
-    
+    rules->start_time = get_time_in_ms();
+    while (++i < rules->num_philos)
+        philos[i].last_meal_time = rules->start_time;
     i = -1;
     while (++i < rules->num_philos)
         pthread_create(&philos[i].thread, NULL, &philo_routine, &philos[i]); 

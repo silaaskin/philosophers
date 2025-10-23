@@ -6,7 +6,7 @@
 /*   By: silaaskin <silaaskin@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 21:49:43 by silaaskin         #+#    #+#             */
-/*   Updated: 2025/10/16 14:56:40 by silaaskin        ###   ########.fr       */
+/*   Updated: 2025/10/23 20:03:11 by silaaskin        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ typedef struct  s_rules
     pthread_mutex_t     print_mutex;
     long                start_time;
     bool                simulation_stop;
-    pthread_mutex_t     *meal_mutexes;//tüm philoların meal mutexini tutan merkezi yapı
     pthread_mutex_t     sim_end_mutex;
+
 }   t_rules;
 
 typedef struct  s_philo
@@ -45,7 +45,8 @@ typedef struct  s_philo
     long           last_meal_time;
     t_rules        *rules;
     pthread_t       thread;
-    pthread_mutex_t *meal_mutex;
+    pthread_mutex_t meal_mutex;
+    
 
 }   t_philo;
 
@@ -69,6 +70,7 @@ void    *philo_routine(void  *arg);
 int     is_simulation_stopped(t_rules *rules);
 void    *monitor_routine(void *arg);
 long	ft_atoi(const char *str);
+void    ft_usleep(long time_ms);
 
 #endif
  
