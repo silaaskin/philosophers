@@ -6,7 +6,7 @@
 /*   By: silaaskin <silaaskin@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/05 17:54:59 by silaaskin         #+#    #+#             */
-/*   Updated: 2025/10/23 21:31:38 by silaaskin        ###   ########.fr       */
+/*   Updated: 2025/10/23 22:03:30 by silaaskin        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,30 +27,30 @@ int     is_simulation_stopped(t_rules *rules)
     return end;
 }
 
-void	check_philo_death(t_philo *philo)
+void    check_philo_death(t_philo *philo)
 {
-	long	now;
-	long	expected_death;
-	long	time_to_print;
+    long now;
+    long time_since_meal;
 
-	pthread_mutex_lock(&philo->meal_mutex);
-	expected_death = philo->last_meal_time + philo->rules->time_to_die;
-	pthread_mutex_unlock(&philo->meal_mutex);
-
-	now = get_time_in_ms();
-
-	if (now >= expected_death)
-	{
-		if (!is_simulation_stopped(philo->rules))
-		{
-			set_simulation_stopped(philo);
-
-			time_to_print = expected_death - philo->rules->start_time;
-			pthread_mutex_lock(&philo->rules->print_mutex);
-			printf("%ld %d died\n", time_to_print, philo->id);
-			pthread_mutex_unlock(&philo->rules->print_mutex);
-		}
-	}
+    pthread_mutex_lock(&philo->meal_mutex);
+    
+    now = get_time_in_ms();
+    time_since_meal = now - philo->last_meal_time;
+    
+    pthread_mutex_unlock(&philo->meal_mutex);
+    
+    if (time_since_meal > philo->rules->time_to_die)
+    {
+        if (!is_simulation_stopped(philo->rules))
+        {
+            set_simulation_stopped(philo);
+            
+            long time = get_time_in_ms() - philo->rules->start_time;
+            pthread_mutex_lock(&philo->rules->print_mutex);
+            printf("%ld %d died\n", time, philo->id);
+            pthread_mutex_unlock(&philo->rules->print_mutex);
+        }
+    }
 }
 
 void check_all_eaten(t_philo *philo)
