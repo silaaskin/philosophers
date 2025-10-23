@@ -18,7 +18,7 @@ void    ft_usleep(long time_ms)
 
     start_time = get_time_in_ms();
     while (get_time_in_ms() - start_time < time_ms)
-        usleep(1000); // İşlemciyi fazla yormamak için kısa bir usleep
+        usleep(100); // İşlemciyi fazla yormamak için kısa bir usleep
 }
 
 long    get_time_in_ms(void)
