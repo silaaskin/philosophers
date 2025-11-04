@@ -6,11 +6,16 @@
 /*   By: silaaskin <silaaskin@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/16 10:07:45 by silaaskin         #+#    #+#             */
-/*   Updated: 2025/10/16 10:07:50 by silaaskin        ###   ########.fr       */
+/*   Updated: 2025/10/27 23:50:55 by silaaskin        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+int error_message(char	*error_message)
+{
+	printf("Error: %s", error_message);
+	return 1;
+}
 
 long	ft_atoi(const char *str)
 {
